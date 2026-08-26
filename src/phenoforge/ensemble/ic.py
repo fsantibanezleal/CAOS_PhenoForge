@@ -20,6 +20,22 @@ def _criterion_values(results: list[FitResult], criterion: str) -> np.ndarray:
     return np.array([getattr(r, criterion) for r in results], dtype=float)
 
 
+def choose_criterion(results: list[FitResult], preferred: str = "aicc") -> str:
+    """Pick ONE coherent criterion for a bank on a given dataset.
+
+    AICc is preferred, but its small-sample correction is undefined (+inf) when
+    n <= p + 1; on very short series that hits EVERY family. Mixing criteria
+    across families would be incoherent, so: use `preferred` when at least one
+    successful fit has a finite value, else fall back to BIC for the whole bank
+    (finite whenever the fit itself is finite).
+    """
+    vals = _criterion_values(results, preferred)
+    ok = [np.isfinite(v) and r.success for v, r in zip(vals, results, strict=True)]
+    if any(ok):
+        return preferred
+    return "bic"
+
+
 def select(results: list[FitResult], criterion: str = "aicc") -> FitResult:
     """Winner-take-all selection by an information criterion."""
     vals = _criterion_values(results, criterion)
