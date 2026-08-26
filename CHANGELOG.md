@@ -1,0 +1,27 @@
+# Changelog
+
+All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
+CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
+
+## [0.01.000] - 2026-08-25
+
+### Added
+
+- Family bank core: `ModelFamily`, `Param`, `Reference`, `DataKind`, `FitResult`
+  (with AIC/AICc/BIC), registry with process filtering.
+- Flotation kinetics families (8): Garcia-Zuniga first-order, Klimpel rectangular,
+  Kelsall, modified Kelsall, gamma rate distribution, second-order, fully mixed,
+  bank of N perfect mixers. Comminution energy-size families (4): Rittinger, Kick,
+  Bond, Morrell Mi. Every family cited to its primary source.
+- Fitting: bounded multistart trust-region NLS (`fit_family`, `fit_bank`), optional
+  weighted residuals.
+- Ensemble methods: IC selection + Akaike-weight model averaging; GLUE behavioural
+  ensembles (NSE informal likelihood, weighted quantiles); bootstrap
+  bagging/bragging (paired + moving-block); cross-validated convex stacking (NNLS
+  simplex weights); BAPE (bootstrap x family-library subsampling with AICc member
+  selection, inclusion probabilities, selection shares).
+- Metrics: RMSE/MAE/R2; ensemble CRPS, PIT values/histogram, central-interval
+  coverage; weight entropy; structural recovery scoring that raises on a missing
+  truth key (can never silently run null).
+- Dataset-to-family router over declared DataKind contracts.
+- 34 tests; ruff clean; MIT license.
