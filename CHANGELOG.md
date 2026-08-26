@@ -3,6 +3,13 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.01.002] - 2026-08-26
+
+### Changed
+
+- release workflow gains workflow_dispatch (push-event triggers were not firing on
+  this repository; publish is dispatched explicitly). No library code changes.
+
 ## [0.01.001] - 2026-08-26
 
 ### Fixed
