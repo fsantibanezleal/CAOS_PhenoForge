@@ -129,15 +129,22 @@ def bape_fit(
         xb, yb = x[idx[b]], y[idx[b]]
         chosen = rng.choice(n_fam, size=subset_size, replace=False)
         subset = tuple(families[int(c)] for c in chosen)
-        best: tuple[ModelFamily, FitResult] | None = None
-        best_val = float("inf")
+        fits: list[tuple[ModelFamily, FitResult]] = []
         for j, fam in enumerate(subset):
             res = fit_family(
                 fam, xb, yb, n_starts=n_starts, seed=seed + 104729 * (b + 1) + j
             )
-            if not (res.success and np.isfinite(res.rss)):
-                continue
-            val = getattr(res, criterion)
+            if res.success and np.isfinite(res.rss):
+                fits.append((fam, res))
+        # coherent per-member criterion: preferred unless it is +inf for every
+        # candidate in this member's menu (tiny resamples), then BIC for all
+        crit = criterion
+        if fits and not any(np.isfinite(getattr(r, criterion)) for _, r in fits):
+            crit = "bic"
+        best: tuple[ModelFamily, FitResult] | None = None
+        best_val = float("inf")
+        for fam, res in fits:
+            val = getattr(res, crit)
             if np.isfinite(val) and val < best_val:
                 best_val = val
                 best = (fam, res)
