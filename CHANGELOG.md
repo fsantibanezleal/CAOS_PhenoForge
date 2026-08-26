@@ -3,6 +3,20 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.02.000] - 2026-08-26
+
+### Added
+
+- `phenoforge.bayes`: affine-invariant ensemble MCMC (Goodman-Weare 2010,
+  DOI 10.2140/camcos.2010.5.65; emcee-style, reimplemented pure-numpy and
+  Pyodide-safe) sampling (theta, sigma) posteriors per family with bounded
+  logit parameterization; BIC-approximated Bayesian model averaging across the
+  bank (Raftery 1995, DOI 10.2307/271063) with proper mixture predictive draws.
+- `phenoforge.hybrid`: exact GP model-discrepancy on a phenomenological backbone
+  (Kennedy-O'Hagan 2001, DOI 10.1111/1467-9868.00294; RBF + noise, marginal
+  likelihood hyperparameters), with posterior function draws as ensemble members.
+- 4 new tests (41 total).
+
 ## [0.01.002] - 2026-08-26
 
 ### Changed
