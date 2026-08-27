@@ -3,6 +3,32 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.03.000] - 2026-08-27
+
+### Added
+
+- Thickening bank (7 families): the batch settling-curve signatures of Kynch
+  ideal kinematics, Richardson-Zaki hindered settling, Coe-Clevenger two-zone,
+  the Talmage-Fitch tangent construction, Buscall-White compressional
+  relaxation, the Usher-Scales series combination, and the Burger-Concha
+  hyperbolic-to-parabolic transition. Each docstring states exactly which
+  observable consequence of its theory the fittable form represents.
+- Leaching bank (6 families): shrinking-core film, surface-reaction and
+  product-layer control (the last inverted from its implicit form by monotone
+  bisection to double precision), the Dixon-Hendrix two-scale column response,
+  the Mellado-Cisternas analytical heap model, and lumped first-order recovery.
+- Batch grinding population-balance bank (4 families): Austin first-order
+  breakage, the Austin abnormal-breakage rollover, Herbst-Fuerstenau
+  energy-specific selection, and the Whiten perfect-mixing residual. The
+  rollover and residual families both NEST the first-order form exactly.
+- Plant utility bank (5 families): per-tonne coefficient, base load plus
+  marginal coefficient, power-law scaling, exponential trend and saturating
+  logistic trend, for water and energy period balances.
+- 34 families total across 5 processes, every one carrying its primary
+  reference; 22 new tests (63 total) covering shape, physical limits, nesting
+  identities, the implicit-form inversion, router separation, and parameter and
+  structural recovery on the new banks.
+
 ## [0.02.001] - 2026-08-27
 
 ### Fixed

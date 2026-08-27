@@ -21,7 +21,7 @@ Nearest prior art, cited and differentiated (see the Fragua research dossiers):
 The core is pure numpy/scipy (Pyodide-safe by design).
 """
 
-__version__ = "0.02.001"
+__version__ = "0.03.000"
 
 from phenoforge.families.base import DataKind, FitResult, ModelFamily, Param
 from phenoforge.families.registry import get_family, list_families

@@ -8,9 +8,16 @@ T = np.array([0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0])
 
 
 def test_registry_counts_and_lookup():
-    assert len(list_families()) == len(flotation.ALL) + len(comminution.ALL)
+    from phenoforge.families import grinding, leaching, thickening, utility
+
+    expected = (
+        len(flotation.ALL) + len(comminution.ALL) + len(grinding.ALL)
+        + len(thickening.ALL) + len(leaching.ALL) + len(utility.ALL)
+    )
+    assert len(list_families()) == expected
     assert len(list_families("flotation")) == 8
-    assert len(list_families("comminution")) == 4
+    # comminution holds the energy-size laws AND the batch grinding PBM families
+    assert len(list_families("comminution")) == len(comminution.ALL) + len(grinding.ALL)
     fam = get_family("flot_first_order")
     assert fam.name.startswith("Classical first-order")
     with pytest.raises(KeyError):

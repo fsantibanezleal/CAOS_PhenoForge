@@ -1,18 +1,37 @@
-"""Family registry: every family the bank currently ships, addressable by key.
+"""Family registry: every family the bank ships, addressable by key.
 
-The bank grows vertically with the Fragua build (flotation + comminution energy laws
-first; thickening, leaching, utility and PBM families land with their cases). Keys are
+The bank spans the mineral-processing unit operations cataloged in the Fragua
+families dossier: flotation kinetics, comminution energy-size laws and batch
+grinding population balances, thickening settling-curve signatures, leaching
+conversion kinetics, and plant utility (water and energy) balances. Keys are
 stable public API.
 """
 
 from __future__ import annotations
 
-from phenoforge.families import comminution, flotation
+from phenoforge.families import (
+    comminution,
+    flotation,
+    grinding,
+    leaching,
+    thickening,
+    utility,
+)
 from phenoforge.families.base import ModelFamily
 
 _ALL: dict[str, ModelFamily] = {
-    f.key: f for f in (*flotation.ALL, *comminution.ALL)
+    f.key: f
+    for f in (
+        *flotation.ALL,
+        *comminution.ALL,
+        *grinding.ALL,
+        *thickening.ALL,
+        *leaching.ALL,
+        *utility.ALL,
+    )
 }
+
+PROCESSES: tuple[str, ...] = ("flotation", "comminution", "thickening", "leaching", "utility")
 
 
 def list_families(process: str | None = None) -> tuple[ModelFamily, ...]:
