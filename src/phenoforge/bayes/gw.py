@@ -37,9 +37,11 @@ def _to_bounded(z: np.ndarray, lo: np.ndarray, hi: np.ndarray) -> np.ndarray:
 
 
 def _log_jacobian(z: np.ndarray, lo: np.ndarray, hi: np.ndarray) -> float:
-    # d theta / d z = (hi-lo) * s * (1-s); log|J| summed over dims
-    s = 1.0 / (1.0 + np.exp(-z))
-    return float(np.sum(np.log(hi - lo) + np.log(s) + np.log(1.0 - s)))
+    # d theta / d z = (hi-lo) * s * (1-s) with s = sigmoid(z); log|J| summed over
+    # dims. Stable form: log s = -logaddexp(0, -z), log(1-s) = -logaddexp(0, z),
+    # so a saturated walker (|z| large) yields -inf exactly, with no divide-by-
+    # zero warning from evaluating log(0) through the naive sigmoid.
+    return float(np.sum(np.log(hi - lo) - np.logaddexp(0.0, -z) - np.logaddexp(0.0, z)))
 
 
 @dataclass
