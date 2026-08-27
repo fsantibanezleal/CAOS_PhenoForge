@@ -12,6 +12,7 @@ from __future__ import annotations
 from phenoforge.families import (
     comminution,
     flotation,
+    flotation_continuous,
     grinding,
     leaching,
     thickening,
@@ -23,6 +24,7 @@ _ALL: dict[str, ModelFamily] = {
     f.key: f
     for f in (
         *flotation.ALL,
+        *flotation_continuous.ALL,
         *comminution.ALL,
         *grinding.ALL,
         *thickening.ALL,

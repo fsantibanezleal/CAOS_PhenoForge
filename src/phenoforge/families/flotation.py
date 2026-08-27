@@ -14,7 +14,10 @@ sources are:
 - Bu, X., Xie, G., Peng, Y., Ge, L., Ni, C., 2017. Physicochem. Probl. Miner.
   Process. 53(1), 342-365 (the model-zoo review incl. second-order and fully mixed).
 
-All batch families map t (min) -> cumulative recovery fraction R in [0, 1].
+All families here map t (min) -> cumulative recovery fraction R in [0, 1] for a
+BATCH test. The continuous (plant) counterparts, where the independent variable
+is mean residence time and the residence time distribution matters, live in
+`phenoforge.families.flotation_continuous`.
 """
 
 from __future__ import annotations
@@ -70,11 +73,6 @@ def _second_order(x: np.ndarray, th: np.ndarray) -> np.ndarray:
 def _fully_mixed(x: np.ndarray, th: np.ndarray) -> np.ndarray:
     rinf, kappa = th[..., 0], th[..., 1]
     return rinf * (x / (x + kappa))
-
-
-def _bank(x: np.ndarray, th: np.ndarray) -> np.ndarray:
-    rinf, k, n = th[..., 0], th[..., 1], th[..., 2]
-    return rinf * (1.0 - np.power(1.0 + k * x / n, -n))
 
 
 FIRST_ORDER = ModelFamily(
@@ -233,33 +231,6 @@ FULLY_MIXED = ModelFamily(
     x_doc="x: flotation time t (min)",
 )
 
-BANK_MIXERS = ModelFamily(
-    key="flot_bank_mixers",
-    name="Bank of N perfect mixers (continuous)",
-    process="flotation",
-    params=(
-        Param("R_inf", "fraction", 0.01, 1.0, 0.85, "ultimate recovery"),
-        Param("k", "1/min", 1e-3, 10.0, 0.5, "collection rate constant"),
-        Param("N", "-", 1.0, 12.0, 4.0, "effective number of mixers in series"),
-    ),
-    fn=_bank,
-    needs=(DataKind.CONTINUOUS_RECOVERY,),
-    equation=r"R = R_\infty\left[1 - \left(1 + \frac{k\,\tau}{N}\right)^{-N}\right]",
-    assumptions=(
-        "Each cell a perfect mixer; kinetics transferable from batch via a scale-up "
-        "factor (industrial k typically 0.4-1.0 x batch k); RTD validated by tracer work "
-        "(Yianatos and coworkers)."
-    ),
-    references=(
-        _POLAT_CHANDER,
-        Reference(
-            "Yianatos et al. 2008, Minerals Engineering 21(12-14), 817-825",
-            "10.1016/j.mineng.2007.12.012",
-        ),
-    ),
-    x_doc="x: mean residence time tau (min)",
-)
-
 BATCH_FAMILIES: tuple[ModelFamily, ...] = (
     FIRST_ORDER,
     KLIMPEL,
@@ -270,4 +241,4 @@ BATCH_FAMILIES: tuple[ModelFamily, ...] = (
     FULLY_MIXED,
 )
 
-ALL: tuple[ModelFamily, ...] = BATCH_FAMILIES + (BANK_MIXERS,)
+ALL: tuple[ModelFamily, ...] = BATCH_FAMILIES

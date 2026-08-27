@@ -3,6 +3,31 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.04.000] - 2026-08-27
+
+### Added
+
+- Continuous (plant) flotation bank (`families.flotation_continuous`, 5
+  families): single perfectly mixed cell, plug flow, N mixers in series,
+  gamma-distributed floatability, and fast/slow classes, all as recovery versus
+  MEAN RESIDENCE TIME. N mixers nests both the single-mixer and plug-flow
+  bounds exactly, so the fitted N measures where a circuit sits between them.
+- Interval and calibration metrics (`metrics.intervals`): the Winkler interval
+  score (Gneiting and Raftery 2007), sharpness, PIT calibration error as a
+  Kolmogorov-Smirnov distance, coverage deviation across nominal levels, the
+  reliability curve, the effective family count (Hill number of the weights),
+  and per-parameter dispersion for the equifinality readout.
+- 20 new tests (83 total), including that widening an already-covering band
+  cannot improve the interval score, and that the continuous families reduce to
+  each other at their documented limits.
+
+### Removed
+
+- `flot_bank_mixers` from the batch flotation bank: it was the N-mixers model,
+  which belongs to (and now lives in) the continuous bank as `flotc_n_mixers`
+  with the identical equation. Batch and continuous banks no longer overlap and
+  the router keeps them apart.
+
 ## [0.03.000] - 2026-08-27
 
 ### Added
