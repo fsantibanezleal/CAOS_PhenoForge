@@ -8,14 +8,22 @@ T = np.array([0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0])
 
 
 def test_registry_counts_and_lookup():
-    from phenoforge.families import grinding, leaching, thickening, utility
+    from phenoforge.families import (
+        flotation_continuous,
+        grinding,
+        leaching,
+        thickening,
+        utility,
+    )
 
     expected = (
-        len(flotation.ALL) + len(comminution.ALL) + len(grinding.ALL)
-        + len(thickening.ALL) + len(leaching.ALL) + len(utility.ALL)
+        len(flotation.ALL) + len(flotation_continuous.ALL) + len(comminution.ALL)
+        + len(grinding.ALL) + len(thickening.ALL) + len(leaching.ALL)
+        + len(utility.ALL)
     )
     assert len(list_families()) == expected
-    assert len(list_families("flotation")) == 8
+    # flotation spans the batch bank plus the continuous (plant) bank
+    assert len(list_families("flotation")) == 7 + len(flotation_continuous.ALL)
     # comminution holds the energy-size laws AND the batch grinding PBM families
     assert len(list_families("comminution")) == len(comminution.ALL) + len(grinding.ALL)
     fam = get_family("flot_first_order")
