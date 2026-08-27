@@ -67,3 +67,23 @@ def test_hybrid_gp_reduces_misspecification_residual():
     draws = hyb.member_draws(np.linspace(0.5, 25.0, 40), 30, rng)
     assert draws.shape == (30, 40)
     assert np.all(np.isfinite(draws))
+
+
+def test_log_jacobian_stable_at_saturation():
+    """A saturated walker (|z| large) must yield the exact finite log-Jacobian
+    (log(hi-lo) - |z| per dim, to leading order) and do so silently; the naive
+    sigmoid form both emitted divide-by-zero RuntimeWarnings through log(1-s)
+    at s == 1.0 and collapsed the value to -inf (observed across whole
+    canonical bakes)."""
+    from phenoforge.bayes.gw import _log_jacobian
+
+    lo = np.array([0.0, 0.0])
+    hi = np.array([1.0, 5.0])
+    z_mod = np.array([0.3, -1.7])
+    s = 1.0 / (1.0 + np.exp(-z_mod))
+    naive = float(np.sum(np.log(hi - lo) + np.log(s) + np.log(1.0 - s)))
+    assert _log_jacobian(z_mod, lo, hi) == pytest.approx(naive, rel=1e-12)
+
+    with np.errstate(divide="raise"):  # the naive form would raise here
+        val = _log_jacobian(np.array([800.0, -800.0]), lo, hi)
+    assert val == pytest.approx(np.log(5.0) - 1600.0, rel=1e-12)

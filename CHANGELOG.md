@@ -3,6 +3,15 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.02.001] - 2026-08-27
+
+### Fixed
+
+- `bayes.gw._log_jacobian`: numerically stable logaddexp form. The naive
+  sigmoid evaluation emitted divide-by-zero RuntimeWarnings and collapsed a
+  saturated walker's log-Jacobian to -inf where the exact value is finite
+  (log(hi-lo) - |z| to leading order); regression test added (42 total).
+
 ## [0.02.000] - 2026-08-26
 
 ### Added
