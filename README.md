@@ -48,6 +48,29 @@ standalone, domain-agnostic library. The core is pure numpy/scipy (Pyodide-safe)
 - **Routing** (`phenoforge.route`): match a dataset's declared data kinds to the
   families they can calibrate.
 
+## What this package deliberately does not contain
+
+phenoforge is pure numpy and scipy, and stays that way. Two capabilities that
+appear in the Fragua results matrix live in the PRODUCT repo rather than here,
+and the split is deliberate:
+
+- **The learned tier** (deep ensembles, and the mixture of phenomenological
+  experts whose gate weights frozen closed-form curves) needs torch and a GPU
+  lane. Putting it here would make a deep-learning stack a hard dependency of a
+  package whose entire value is that it is small, deterministic and installable
+  anywhere, including inside a browser through Pyodide, which is how the Fragua
+  live lane runs it.
+- **Ensemble-SINDy** needs pysindy. It is in the comparison as the generic
+  term-library CONTRAST to a curated family bank, so it is by definition not a
+  phenoforge method: the whole point of the comparison is that one side does not
+  use this package's premise.
+
+Everything that is phenomenological in the sense this package means (a bounded,
+cited, closed-form family, and any aggregation over such families) belongs here
+and is here. If a method needs to know what the equations MEAN, it is a
+phenoforge method; if it only needs numbers, it is a baseline and lives with the
+experiment.
+
 ## Quick start
 
 ```python
