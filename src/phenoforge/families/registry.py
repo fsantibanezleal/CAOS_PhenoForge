@@ -15,6 +15,7 @@ from phenoforge.families import (
     flotation_continuous,
     grinding,
     leaching,
+    thermal,
     thickening,
     utility,
 )
@@ -29,11 +30,14 @@ _ALL: dict[str, ModelFamily] = {
         *grinding.ALL,
         *thickening.ALL,
         *leaching.ALL,
+        *thermal.ALL,
         *utility.ALL,
     )
 }
 
-PROCESSES: tuple[str, ...] = ("flotation", "comminution", "thickening", "leaching", "utility")
+PROCESSES: tuple[str, ...] = (
+    "flotation", "comminution", "thickening", "leaching", "thermal", "utility",
+)
 
 
 def list_families(process: str | None = None) -> tuple[ModelFamily, ...]:

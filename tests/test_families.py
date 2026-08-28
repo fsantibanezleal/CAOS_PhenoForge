@@ -12,6 +12,7 @@ def test_registry_counts_and_lookup():
         flotation_continuous,
         grinding,
         leaching,
+        thermal,
         thickening,
         utility,
     )
@@ -19,7 +20,7 @@ def test_registry_counts_and_lookup():
     expected = (
         len(flotation.ALL) + len(flotation_continuous.ALL) + len(comminution.ALL)
         + len(grinding.ALL) + len(thickening.ALL) + len(leaching.ALL)
-        + len(utility.ALL)
+        + len(thermal.ALL) + len(utility.ALL)
     )
     assert len(list_families()) == expected
     # flotation spans the batch bank plus the continuous (plant) bank

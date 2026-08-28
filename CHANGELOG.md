@@ -3,6 +3,18 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.04.001] - 2026-08-27
+
+### Fixed
+
+- `hybrid.gp`: escalating-jitter Cholesky. An RBF kernel on a large-valued,
+  closely spaced driver (an eleven-year record indexed 1 to 11 with values near
+  1.3e4) is numerically singular though positive definite in exact arithmetic;
+  plain Cholesky raised LinAlgError and killed a canonical bake mid-run. Jitter
+  escalates from 1e-12 to 1e-2 of the mean diagonal and still raises beyond
+  that, so a genuinely broken kernel is not silently regularized. Regression
+  test on the exact failing series (84 tests).
+
 ## [0.04.000] - 2026-08-27
 
 ### Added
