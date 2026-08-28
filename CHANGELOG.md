@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.05.001 - 2026-08-28
+
+### Fixed
+- `bayes.gw.sample_posterior` defaulted to `sigma_bounds=(1e-4, 0.5)` in RAW
+  target units, and the log-posterior returns minus infinity outside them. Right
+  for a recovery fraction, meaningless for anything else, and worse than tight:
+  the walker start is an order of magnitude below the data spread, so for a
+  series spanning about 17 units the start sat ABOVE the hard cap and every
+  walker was born at minus infinity. The sampler was degenerate, not merely
+  overconfident, on every large-scale observable.
+
+  The prior support is now derived from the data when `sigma_bounds` is None
+  (the new default): a noise standard deviation cannot sensibly exceed a few
+  times the spread of the observable, nor be a millionth of it. Callers that
+  know the noise scale independently may still pin it. The walker start is
+  clipped inside the support.
+
+  This is the third instance of one pattern found on 2026-08-28, after the
+  deep-ensemble sigmoid and the E-SINDy blow-up bound, both in the consuming
+  product: a constant written for the first observable a product ever had, hard
+  coded into a method, never revisited as the observables multiplied. Eight
+  tests pin the behaviour across three orders of magnitude of target scale.
+
 ## 0.05.000 - 2026-08-28
 
 ### Added

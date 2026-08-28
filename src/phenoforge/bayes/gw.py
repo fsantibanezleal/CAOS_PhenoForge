@@ -66,16 +66,34 @@ def sample_posterior(
     thin: int = 2,
     seed: int = 0,
     theta_init: np.ndarray | None = None,
-    sigma_bounds: tuple[float, float] = (1e-4, 0.5),
+    sigma_bounds: tuple[float, float] | None = None,
     stretch_a: float = 2.0,
 ) -> PosteriorSample:
-    """Gaussian-likelihood posterior over (theta, sigma) for one family."""
+    """Gaussian-likelihood posterior over (theta, sigma) for one family.
+
+    `sigma_bounds` defaults to None, meaning the support of the noise-scale prior
+    is derived from the spread of `y`. Pass an explicit pair only when the noise
+    scale is known independently of the data; a hard-coded pair silently
+    restricts which observables the sampler can represent at all.
+    """
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     n = y.size
     lo, hi = family.bounds
     k = family.k
     rng = np.random.default_rng(seed)
+    # The noise scale lives in the units of y, so its prior must too. A fixed
+    # pair of numbers here is only ever right for one observable: the previous
+    # default of (1e-4, 0.5) was written for a recovery fraction and put the
+    # walker start ABOVE the hard cap for any series with a spread over five
+    # units, which made every walker start at -inf. Derived bounds cannot do
+    # that: a noise standard deviation above a few times the spread of the data
+    # is not a noise model, and one a millionth of it is numerically zero.
+    if sigma_bounds is None:
+        s = float(np.std(y))
+        if not np.isfinite(s) or s <= 0.0:
+            s = max(abs(float(np.mean(y))), 1.0)
+        sigma_bounds = (1e-6 * s, 4.0 * s)
     slo, shi = np.log(sigma_bounds[0]), np.log(sigma_bounds[1])
 
     def log_post(zfull: np.ndarray) -> float:
@@ -90,7 +108,9 @@ def sample_posterior(
 
     center = theta_init if theta_init is not None else family.inits
     z0 = _to_unbounded(np.clip(center, lo + 1e-9 * (hi - lo), hi - 1e-9 * (hi - lo)), lo, hi)
-    sig0 = np.log(max(np.std(y) * 0.1 + 1e-6, sigma_bounds[0] * 1.5))
+    # start an order of magnitude below the data spread, but never outside the
+    # prior support (the previous form could and did land above the upper bound)
+    sig0 = float(np.clip(np.log(np.std(y) * 0.1 + 1e-12), slo + 1e-6, shi - 1e-6))
     walkers = np.tile(np.concatenate([z0, [sig0]]), (n_walkers, 1))
     walkers += 0.1 * rng.standard_normal(walkers.shape)
     lp = np.array([log_post(w) for w in walkers])
