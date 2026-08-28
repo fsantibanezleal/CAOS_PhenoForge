@@ -3,6 +3,20 @@
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 
+## [0.04.002] - 2026-08-27
+
+### Fixed
+
+- `hybrid.gp.member_draws`: the POSTERIOR covariance is a difference of kernels,
+  so it can be numerically indefinite even where the prior kernel factors
+  cleanly. The fixed 1e-10 ridge was insufficient on a large-valued annual
+  record and raised inside the draw, killing a canonical bake AFTER 0.04.001
+  had fixed the kernel path. The covariance is now symmetrized, factored with
+  the same escalating trace-relative jitter, and sampled from that factor
+  directly rather than through `multivariate_normal`, so the jitter that
+  succeeded is the one actually used. Regression test covers both the data grid
+  and a dense extrapolation grid (85 tests).
+
 ## [0.04.001] - 2026-08-27
 
 ### Fixed

@@ -105,3 +105,23 @@ def test_hybrid_gp_survives_a_numerically_singular_kernel():
     assert np.all(np.isfinite(hyb.predict(x)))
     draws = hyb.member_draws(x, 20, np.random.default_rng(0))
     assert draws.shape == (20, 11) and np.all(np.isfinite(draws))
+
+
+def test_hybrid_member_draws_survive_a_singular_posterior_covariance():
+    """The posterior covariance is a DIFFERENCE of kernels, so it can be
+    numerically indefinite even when the prior kernel factors cleanly. A fixed
+    1e-10 ridge was not enough on a large-valued annual record and killed a
+    canonical bake inside member_draws, not inside the fit."""
+    x = np.arange(1.0, 12.0)
+    y = np.array([12951.0, 13071.6, 13614.2, 13263.5, 13357.5, 12450.0,
+                  12089.3, 11843.6, 11918.0, 12016.8, 14984.1])
+    from phenoforge.families import utility
+    from phenoforge.fit import fit_family
+
+    res = fit_family(utility.EXP_TREND, x, y, n_starts=8, seed=0)
+    hyb = hybrid_gp_fit(utility.EXP_TREND, res.theta, x, y)
+    rng = np.random.default_rng(0)
+    for grid in (x, np.linspace(1.0, 15.0, 120)):
+        draws = hyb.member_draws(grid, 40, rng)
+        assert draws.shape == (40, grid.size)
+        assert np.all(np.isfinite(draws))

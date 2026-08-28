@@ -86,8 +86,17 @@ class HybridGp:
         xs = np.asarray(xs, dtype=float)
         base = self.family.predict(xs, self.theta)
         mean, cov = self._gp_posterior(xs)
-        cov = cov + 1e-10 * np.eye(cov.shape[0])
-        draws = rng.multivariate_normal(mean, cov, size=n_draws, method="cholesky")
+        # The POSTERIOR covariance is the harder matrix: it is a difference of
+        # two kernels, so rounding can push it indefinite even where the prior
+        # kernel factors cleanly. A fixed 1e-10 ridge is not enough on
+        # large-valued series (it once killed a canonical bake), so the same
+        # escalating, trace-relative jitter is used, and the draw is taken from
+        # the factor directly rather than through multivariate_normal so the
+        # jitter that succeeded is the one actually used.
+        cov = 0.5 * (cov + cov.T)  # symmetrize away rounding asymmetry first
+        chol = _safe_cholesky(cov)
+        z = rng.standard_normal((n_draws, mean.shape[0]))
+        draws = mean[None, :] + z @ chol.T
         return base[None, :] + draws
 
 
