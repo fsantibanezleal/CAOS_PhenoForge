@@ -18,6 +18,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e ".[dev]"
       - run: python -m ruff check src tests
+      - name: No unreviewed magic constant in method code
+        run: python scripts/check_unit_constants.py
       - run: python -m pytest tests -q
   wheel-smoke:
     runs-on: ubuntu-latest
