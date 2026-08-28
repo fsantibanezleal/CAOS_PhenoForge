@@ -87,3 +87,21 @@ def test_log_jacobian_stable_at_saturation():
     with np.errstate(divide="raise"):  # the naive form would raise here
         val = _log_jacobian(np.array([800.0, -800.0]), lo, hi)
     assert val == pytest.approx(np.log(5.0) - 1600.0, rel=1e-12)
+
+
+def test_hybrid_gp_survives_a_numerically_singular_kernel():
+    """An RBF kernel on a large-valued, closely-spaced driver (an eleven-year
+    record indexed 1..11 with values near 1.3e4) is numerically singular even
+    though it is positive definite in exact arithmetic. Plain Cholesky raised
+    LinAlgError and killed a canonical bake; escalating jitter must recover it."""
+    x = np.arange(1.0, 12.0)
+    y = np.array([12951.0, 13071.6, 13614.2, 13263.5, 13357.5, 12450.0,
+                  12089.3, 11843.6, 11918.0, 12016.8, 14984.1])
+    from phenoforge.families import utility
+    from phenoforge.fit import fit_family
+
+    res = fit_family(utility.EXP_TREND, x, y, n_starts=8, seed=0)
+    hyb = hybrid_gp_fit(utility.EXP_TREND, res.theta, x, y)
+    assert np.all(np.isfinite(hyb.predict(x)))
+    draws = hyb.member_draws(x, 20, np.random.default_rng(0))
+    assert draws.shape == (20, 11) and np.all(np.isfinite(draws))

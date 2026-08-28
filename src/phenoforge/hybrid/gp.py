@@ -29,6 +29,29 @@ def _rbf(xa: np.ndarray, xb: np.ndarray, amp2: float, ls: float) -> np.ndarray:
     return amp2 * np.exp(-0.5 * (d / ls) ** 2)
 
 
+def _safe_cholesky(k: np.ndarray) -> np.ndarray:
+    """Cholesky with escalating jitter.
+
+    An RBF kernel on a driver whose values are large and closely spaced (an
+    eleven-year record indexed 1..11, or any series with near-duplicate x) is
+    numerically singular even though it is positive definite in exact
+    arithmetic. Standard GP practice is to add a small multiple of the trace to
+    the diagonal and escalate until the factorization succeeds; the amount used
+    is bounded so a genuinely broken kernel still raises instead of being
+    silently regularized into meaninglessness.
+    """
+    n = k.shape[0]
+    scale = float(np.trace(k)) / max(n, 1)
+    for exponent in range(-12, -1):
+        try:
+            return np.linalg.cholesky(k + (10.0**exponent) * scale * np.eye(n))
+        except np.linalg.LinAlgError:
+            continue
+    raise np.linalg.LinAlgError(
+        "GP kernel is not positive definite even with 1 percent jitter"
+    )
+
+
 @dataclass
 class HybridGp:
     family: ModelFamily
@@ -88,7 +111,7 @@ def hybrid_gp_fit(
         amp2, ls, noise2 = np.exp(p)
         k = _rbf(x, x, amp2, ls) + noise2 * np.eye(n)
         try:
-            lchol = np.linalg.cholesky(k)
+            lchol = _safe_cholesky(k)
         except np.linalg.LinAlgError:
             return 1e12
         alpha = np.linalg.solve(lchol.T, np.linalg.solve(lchol, resid))
@@ -106,7 +129,7 @@ def hybrid_gp_fit(
     amp2, ls, noise2 = np.exp(sol.x)
 
     k = _rbf(x, x, amp2, ls) + noise2 * np.eye(n)
-    lchol = np.linalg.cholesky(k + 1e-12 * np.eye(n))
+    lchol = _safe_cholesky(k)
     alpha = np.linalg.solve(lchol.T, np.linalg.solve(lchol, resid))
     return HybridGp(
         family=family, theta=np.asarray(theta, dtype=float),
