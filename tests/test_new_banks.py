@@ -18,8 +18,8 @@ T = np.array([1.0, 2.0, 5.0, 10.0, 20.0, 40.0, 80.0])
 def test_registry_totals_and_processes():
     fams = list_families()
     # batch flotation 7 + continuous flotation 5 + comminution 4 + grinding 4
-    # + thickening 7 + leaching 6 + thermal 4 + utility 5
-    assert len(fams) == 7 + 5 + 4 + 4 + 7 + 6 + 4 + 5
+    # + thickening 7 + leaching 6 + thermal 4 + utility 5 + dynamics 6
+    assert len(fams) == 7 + 5 + 4 + 4 + 7 + 6 + 4 + 5 + 6
     assert len(list_families("thickening")) == 7
     assert len(list_families("leaching")) == 6
     assert len(list_families("utility")) == 5

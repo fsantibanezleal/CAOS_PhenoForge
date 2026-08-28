@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.05.000 - 2026-08-28
+
+### Added
+- `families/dynamics.py`: process step-response bank, six competing lumped
+  structures over the same reaction curve (first-order lag, first order plus
+  dead time, two unequal lags in series, repeated lag, underdamped second
+  order, integrating plus lag). New `DataKind.STEP_RESPONSE` and new process
+  `dynamics`. Cited to Ziegler and Nichols 1942, Sundaresan and Krishnaswamy
+  1978, Ogunnaike and Ray 1994, Marlin 2000, Astrom and Hagglund 2006 and
+  Seborg et al. 2016.
+- `comminution.fixed_feed_bank(f80_um)`: the four energy-size laws projected
+  onto the product size at a constant series feed, which is what a grindability
+  or crushing test actually sweeps. Keys, parameters, equations and references
+  are unchanged, so the projection is exact rather than an approximation.
+
+### Notes
+- The overdamped pair is now continuous at its repeated pole: the textbook
+  closed form divides by `tau_1 - tau_2`, and the critically damped expression
+  is substituted inside a relative tolerance of 1e-6.
+- Bank totals: 48 families across 7 processes.
+
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 

@@ -17,6 +17,8 @@ x is (n, 2) with columns [F80_um, P80_um]; y is specific energy W (kWh/t).
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 
 from phenoforge.families.base import DataKind, ModelFamily, Param, Reference
@@ -120,3 +122,43 @@ MORRELL_MI = ModelFamily(
 )
 
 ALL: tuple[ModelFamily, ...] = (BOND, RITTINGER, KICK, MORRELL_MI)
+
+
+def fixed_feed_bank(f80_um: float) -> tuple[ModelFamily, ...]:
+    """The same four laws as functions of P80 alone, at a constant feed size.
+
+    A grindability or crushing test series holds the feed fixed and sweeps the
+    closing screen, so F80 is a property of the SERIES, not of the observation.
+    Projecting the two-column input onto its second column at a constant F80 is
+    therefore exact, not an approximation: it loses no information the
+    experiment ever contained, and it lets the laws be fitted, plotted and
+    extrapolated against the single variable the test actually manipulated.
+
+    Keys, parameters, equations and references are unchanged, so a family
+    identified here is the same family identified anywhere else in the bank.
+
+    Parameters
+    ----------
+    f80_um:
+        The series feed size in micrometers. Must be positive and strictly
+        larger than any product size it will be evaluated against, otherwise
+        the energy laws return negative work.
+    """
+    if not np.isfinite(f80_um) or f80_um <= 0.0:
+        raise ValueError(f"f80_um must be a positive finite size, got {f80_um!r}")
+
+    def project(family: ModelFamily) -> ModelFamily:
+        base_fn = family.fn
+
+        def fn(x: np.ndarray, th: np.ndarray, _base=base_fn) -> np.ndarray:
+            p80 = np.asarray(x, dtype=float)
+            pair = np.stack([np.full_like(p80, float(f80_um)), p80], axis=-1)
+            return _base(pair, th)
+
+        return replace(
+            family,
+            fn=fn,
+            x_doc=f"x: P80 (um) at a constant series feed F80 = {f80_um:g} um",
+        )
+
+    return tuple(project(f) for f in ALL)

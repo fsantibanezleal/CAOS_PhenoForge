@@ -3,7 +3,8 @@
 The bank spans the mineral-processing unit operations cataloged in the Fragua
 families dossier: flotation kinetics, comminution energy-size laws and batch
 grinding population balances, thickening settling-curve signatures, leaching
-conversion kinetics, and plant utility (water and energy) balances. Keys are
+conversion kinetics, process step-response dynamics, and plant utility (water
+and energy) balances. Keys are
 stable public API.
 """
 
@@ -11,6 +12,7 @@ from __future__ import annotations
 
 from phenoforge.families import (
     comminution,
+    dynamics,
     flotation,
     flotation_continuous,
     grinding,
@@ -32,11 +34,13 @@ _ALL: dict[str, ModelFamily] = {
         *leaching.ALL,
         *thermal.ALL,
         *utility.ALL,
+        *dynamics.ALL,
     )
 }
 
 PROCESSES: tuple[str, ...] = (
-    "flotation", "comminution", "thickening", "leaching", "thermal", "utility",
+    "flotation", "comminution", "thickening", "leaching", "dynamics", "thermal",
+    "utility",
 )
 
 
