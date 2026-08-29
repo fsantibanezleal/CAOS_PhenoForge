@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phenoforge"
-version = "0.5.1"
+version = "0.5.2"
 description = "Phenomenological model-family bank and ensemble calibration engine for industrial processes (BAPE: Bootstrap-Aggregated Phenomenological Ensembles)"
 readme = "README.md"
 license = { text = "MIT" }

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.05.002 - 2026-08-29
+
+### Fixed
+- `__version__` was a hardcoded literal in `__init__.py` and had drifted: the
+  0.05.000 and 0.05.001 releases both reported `0.04.002`. The consuming product
+  stamps this string into EVERY baked manifest as the engine that produced the
+  result, so a whole matrix of artifacts would have recorded an engine version
+  that never ran, and the reproducibility claim those artifacts exist to support
+  would have been false.
+
+  The version is now DERIVED from the installed distribution metadata, whose
+  single source is `pyproject.toml`, so it cannot drift again. Three tests pin
+  the mechanism rather than today's value: one asserts equality with
+  `importlib.metadata.version`, one fails if a string literal is ever assigned to
+  `__version__` in the source again, and one checks the shape.
+
 ## 0.05.001 - 2026-08-28
 
 ### Fixed
