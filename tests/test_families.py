@@ -9,6 +9,7 @@ T = np.array([0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0])
 
 def test_registry_counts_and_lookup():
     from phenoforge.families import (
+        dynamics,
         flotation_continuous,
         grinding,
         leaching,
@@ -20,13 +21,15 @@ def test_registry_counts_and_lookup():
     expected = (
         len(flotation.ALL) + len(flotation_continuous.ALL) + len(comminution.ALL)
         + len(grinding.ALL) + len(thickening.ALL) + len(leaching.ALL)
-        + len(thermal.ALL) + len(utility.ALL)
+        + len(thermal.ALL) + len(utility.ALL) + len(dynamics.ALL)
     )
     assert len(list_families()) == expected
     # flotation spans the batch bank plus the continuous (plant) bank
     assert len(list_families("flotation")) == 7 + len(flotation_continuous.ALL)
     # comminution holds the energy-size laws AND the batch grinding PBM families
     assert len(list_families("comminution")) == len(comminution.ALL) + len(grinding.ALL)
+    # process dynamics is its own process; the step-response bank stands alone
+    assert len(list_families("dynamics")) == len(dynamics.ALL)
     fam = get_family("flot_first_order")
     assert fam.name.startswith("Classical first-order")
     with pytest.raises(KeyError):

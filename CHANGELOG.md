@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.05.002 - 2026-08-29
+
+### Fixed
+- `__version__` was a hardcoded literal in `__init__.py` and had drifted: the
+  0.05.000 and 0.05.001 releases both reported `0.04.002`. The consuming product
+  stamps this string into EVERY baked manifest as the engine that produced the
+  result, so a whole matrix of artifacts would have recorded an engine version
+  that never ran, and the reproducibility claim those artifacts exist to support
+  would have been false.
+
+  The version is now DERIVED from the installed distribution metadata, whose
+  single source is `pyproject.toml`, so it cannot drift again. Three tests pin
+  the mechanism rather than today's value: one asserts equality with
+  `importlib.metadata.version`, one fails if a string literal is ever assigned to
+  `__version__` in the source again, and one checks the shape.
+
+## 0.05.001 - 2026-08-28
+
+### Fixed
+- `bayes.gw.sample_posterior` defaulted to `sigma_bounds=(1e-4, 0.5)` in RAW
+  target units, and the log-posterior returns minus infinity outside them. Right
+  for a recovery fraction, meaningless for anything else, and worse than tight:
+  the walker start is an order of magnitude below the data spread, so for a
+  series spanning about 17 units the start sat ABOVE the hard cap and every
+  walker was born at minus infinity. The sampler was degenerate, not merely
+  overconfident, on every large-scale observable.
+
+  The prior support is now derived from the data when `sigma_bounds` is None
+  (the new default): a noise standard deviation cannot sensibly exceed a few
+  times the spread of the observable, nor be a millionth of it. Callers that
+  know the noise scale independently may still pin it. The walker start is
+  clipped inside the support.
+
+  This is the third instance of one pattern found on 2026-08-28, after the
+  deep-ensemble sigmoid and the E-SINDy blow-up bound, both in the consuming
+  product: a constant written for the first observable a product ever had, hard
+  coded into a method, never revisited as the observables multiplied. Eight
+  tests pin the behaviour across three orders of magnitude of target scale.
+
+## 0.05.000 - 2026-08-28
+
+### Added
+- `families/dynamics.py`: process step-response bank, six competing lumped
+  structures over the same reaction curve (first-order lag, first order plus
+  dead time, two unequal lags in series, repeated lag, underdamped second
+  order, integrating plus lag). New `DataKind.STEP_RESPONSE` and new process
+  `dynamics`. Cited to Ziegler and Nichols 1942, Sundaresan and Krishnaswamy
+  1978, Ogunnaike and Ray 1994, Marlin 2000, Astrom and Hagglund 2006 and
+  Seborg et al. 2016.
+- `comminution.fixed_feed_bank(f80_um)`: the four energy-size laws projected
+  onto the product size at a constant series feed, which is what a grindability
+  or crushing test actually sweeps. Keys, parameters, equations and references
+  are unchanged, so the projection is exact rather than an approximation.
+
+### Notes
+- The overdamped pair is now continuous at its repeated pole: the textbook
+  closed form divides by `tau_1 - tau_2`, and the critically damped expression
+  is substituted inside a relative tolerance of 1e-6.
+- Bank totals: 48 families across 7 processes.
+
 All notable changes to phenoforge. Format follows Keep a Changelog; versions use the
 CAOS `X.XX.XXX` display form (manifest carries the unpadded semver twin).
 

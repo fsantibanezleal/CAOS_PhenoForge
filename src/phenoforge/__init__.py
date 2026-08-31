@@ -21,7 +21,19 @@ Nearest prior art, cited and differentiated (see the Fragua research dossiers):
 The core is pure numpy/scipy (Pyodide-safe by design).
 """
 
-__version__ = "0.04.002"
+# Derived from the installed distribution metadata, never typed here. A
+# hardcoded literal drifted through two releases (0.5.0 and 0.5.1 both reported
+# 0.04.002), and the consuming product stamps this string into EVERY baked
+# manifest as the engine that produced it, so the artifacts would have recorded
+# an engine version that never ran. pyproject.toml is the single source.
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _dist_version
+
+try:
+    __version__ = _dist_version("phenoforge")
+except PackageNotFoundError:  # a source checkout that was never installed
+    __version__ = "0.0.0+source"
+
 
 from phenoforge.families.base import DataKind, FitResult, ModelFamily, Param
 from phenoforge.families.registry import get_family, list_families

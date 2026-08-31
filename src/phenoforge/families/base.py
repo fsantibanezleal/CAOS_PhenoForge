@@ -38,6 +38,7 @@ class DataKind(str, Enum):
     CONVERSION_TIME = "conversion_time"        # leaching: conversion vs time
     XY_RESPONSE = "xy_response"                # generic tabular response (features -> target)
     ANNUAL_BALANCE = "annual_balance"          # utility series: annual consumption balances
+    STEP_RESPONSE = "step_response"            # process dynamics: transient after a step
 
 
 @dataclass(frozen=True)

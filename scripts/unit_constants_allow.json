@@ -1,0 +1,110 @@
+{
+  "src/phenoforge/bayes/bma.py::0.005": {
+    "reason": "UNIT-FREE: a MODEL PROBABILITY below which a family contributes no posterior draws. Model probabilities are normalized to sum to one.",
+    "source": "min_prob: float = 5e-3,"
+  },
+  "src/phenoforge/bayes/gw.py::0.05": {
+    "reason": "UNIT-FREE: the standard deviation of the perturbation used to revive a walker born in a minus-infinity pocket, applied in the UNBOUNDED transformed parameter space, not in the units of theta or of y.",
+    "source": "walkers[i] = np.concatenate([z0, [sig0]]) + 0.05 * rng.standard_normal(k + 1)"
+  },
+  "src/phenoforge/bayes/gw.py::0.1": {
+    "reason": "UNIT-FREE: a FRACTION of the observed standard deviation of y, used as the walker's starting noise scale. It scales with the observable by construction, and is clipped inside the prior support so it can never start outside it (the 2026-08-28 defect).",
+    "source": "sig0 = float(np.clip(np.log(np.std(y) * 0.1 + 1e-12), slo + 1e-6, shi - 1e-6))"
+  },
+  "src/phenoforge/bayes/gw.py::4.0": {
+    "reason": "UNIT-FREE: a MULTIPLE of the observed standard deviation of y, bounding the noise-scale prior. A noise standard deviation four times the spread of the data is already not a noise model. Replaced a hard-coded 0.5 in raw target units on 2026-08-28.",
+    "source": "sigma_bounds = (1e-6 * s, 4.0 * s)"
+  },
+  "src/phenoforge/ensemble/bape.py::0.05": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bape.py::0.25": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bape.py::0.75": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bape.py::0.95": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bootstrap.py::0.05": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bootstrap.py::0.25": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bootstrap.py::0.75": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/bootstrap.py::0.95": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.25, 0.5, 0.75, 0.95)"
+  },
+  "src/phenoforge/ensemble/glue.py::0.05": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "def quantiles(self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.5, 0.95)) -> np.ndarray:"
+  },
+  "src/phenoforge/ensemble/glue.py::0.95": {
+    "reason": "UNIT-FREE: a quantile level of a predictive distribution.",
+    "source": "def quantiles(self, x: np.ndarray, qs: tuple[float, ...] = (0.05, 0.5, 0.95)) -> np.ndarray:"
+  },
+  "src/phenoforge/hybrid/gp.py::0.001": {
+    "reason": "IN UNITS OF THE RESIDUAL, and only reachable when the residual standard deviation is EXACTLY zero, which means the backbone fits perfectly and the discrepancy process has nothing to model. The value is then arbitrary because the optimum amplitude is zero. Reviewed 2026-08-28 and left as is; it is the one place in this module where a number is not derived from the data, and it is unreachable when the data is informative.",
+    "source": "std = float(np.std(resid)) or 1e-3"
+  },
+  "src/phenoforge/hybrid/gp.py::1000000000000.0": {
+    "reason": "UNIT-FREE: a sentinel negative log-likelihood returned when the kernel refuses to factor, so the optimizer walks away from that corner. It is compared against other log-likelihoods, never against a measured quantity.",
+    "source": "return 1e12"
+  },
+  "src/phenoforge/hybrid/gp.py::3.0": {
+    "reason": "UNIT-FREE: a MULTIPLE of the observed x span, bounding the kernel length scale above. Scales with whatever the driver is.",
+    "source": "(np.log(span / 50.0), np.log(span * 3.0)),"
+  },
+  "src/phenoforge/hybrid/gp.py::4.0": {
+    "reason": "UNIT-FREE: a MULTIPLE of the residual variance, bounding the kernel amplitude above. Scales with the observable.",
+    "source": "(np.log(1e-10), np.log(4.0 * std * std + 1e-8)),"
+  },
+  "src/phenoforge/hybrid/gp.py::50.0": {
+    "reason": "UNIT-FREE: a DIVISOR of the observed x span, bounding the kernel length scale below.",
+    "source": "(np.log(span / 50.0), np.log(span * 3.0)),"
+  },
+  "src/phenoforge/metrics/calibration.py::0.9": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "def interval_coverage(ens: np.ndarray, y: np.ndarray, level: float = 0.9) -> float:"
+  },
+  "src/phenoforge/metrics/intervals.py::0.1": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.25": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.75": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.8": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.5, 0.8, 0.9, 0.95),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.9": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.95": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  },
+  "src/phenoforge/metrics/intervals.py::0.99": {
+    "reason": "UNIT-FREE: a nominal probability level for interval coverage or a reliability curve.",
+    "source": "levels: tuple[float, ...] = (0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99),"
+  }
+}

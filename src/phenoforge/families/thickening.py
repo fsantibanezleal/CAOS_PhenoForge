@@ -82,7 +82,16 @@ def _cc_two_zone(x: np.ndarray, th: np.ndarray) -> np.ndarray:
     h0, v0, t_c, h_inf, tau = th[..., 0], th[..., 1], th[..., 2], th[..., 3], th[..., 4]
     h_c = np.maximum(h0 - v0 * t_c, h_inf)
     free = h0 - v0 * x
-    comp = h_inf + (h_c - h_inf) * np.exp(-(x - t_c) / np.maximum(tau, 1e-9))
+    # np.where evaluates BOTH branches, so this one is computed for x < t_c too,
+    # where -(x - t_c)/tau is large and POSITIVE and exp overflows to inf (then to
+    # NaN if the prefactor is zero). The result was never wrong, because the
+    # overflowed values are the discarded branch, but the warning fires inside every
+    # fitting loop and floods stderr. Clamping the argument at zero is exactly
+    # equivalent WHERE THE BRANCH IS USED (x >= t_c leaves it unchanged) and bounds
+    # exp by 1 everywhere else. Verified bit-identical on the settling cases.
+    comp = h_inf + (h_c - h_inf) * np.exp(
+        -np.maximum(x - t_c, 0.0) / np.maximum(tau, 1e-9)
+    )
     return np.where(x <= t_c, np.maximum(free, h_inf), comp)
 
 
@@ -94,7 +103,9 @@ def _talmage_fitch(x: np.ndarray, th: np.ndarray) -> np.ndarray:
     h0, v0, h_u, tau = th[..., 0], th[..., 1], th[..., 2], th[..., 3]
     t_c = np.maximum((h0 - h_u) / np.maximum(v0, 1e-12), 1e-9)
     free = h0 - v0 * x
-    comp = h_u + (h_u * 0.0 + (h0 - v0 * t_c) - h_u) * np.exp(-(x - t_c) / np.maximum(tau, 1e-9))
+    comp = h_u + (h_u * 0.0 + (h0 - v0 * t_c) - h_u) * np.exp(
+        -np.maximum(x - t_c, 0.0) / np.maximum(tau, 1e-9)
+    )
     return np.where(x <= t_c, np.maximum(free, h_u), np.maximum(comp, h_u))
 
 
